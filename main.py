@@ -10,170 +10,185 @@ import sys
 import time
 import pygame
 
-pygame.init()
+class Game:
 
-RUN = True
+    def __init__(self):
 
-window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-window_title = pygame.display.set_caption("SPACE INVADERS 1978 2022RX")
-window_icon = pygame.display.set_icon(pygame.image.load("image/alien1.png"))
-window_clock = pygame.time.Clock()
-window_rect = window.get_rect()
+        pygame.init()
+        pygame.display.init()
+        pygame.mixer.init()
 
-ship_sprite = pygame.sprite.Sprite()
-ship_sprite.image = pygame.transform.scale(pygame.image.load("image/ship1.png"),(64,64))
-ship_sprite.rect = ship_sprite.image.get_rect()
-ship_sprite.rect.midbottom = window_rect.midbottom
-ship_moving_speed = 6
-ship_moving_up = False
-ship_moving_down = False
-ship_moving_right = False
-ship_moving_left = False
-ship_blood = 3
+        # Config =========================================================================================================
 
-bullet_list = pygame.sprite.Group()
-bullet_moving_speed = 6
+        self.RUN = True
 
-alien_list = pygame.sprite.Group()
-alien_moving_speed = 16
-alien_direction = 3
+        self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.window_title = pygame.display.set_caption("SPACE INVADERS 1978 2022RX")
+        self.window_icon = pygame.display.set_icon(pygame.image.load("assets/graphics/image/alien1.png"))
+        self.window_clock = pygame.time.Clock()
+        self.window_rect = self.window.get_rect()
 
-def alien_spawn():
-    alien_space_sprite = pygame.sprite.Sprite()
-    alien_space_sprite.image = pygame.transform.scale(pygame.image.load("image/alien1.png"),(64,64))
-    alien_space_sprite.rect = alien_space_sprite.image.get_rect()
-    window_width, window_height = window_rect.size
-    ship_width, ship_height = ship_sprite.rect.size
-    space_x = window_width - alien_space_sprite.rect.width*2
-    space_y = window_height - ship_height - alien_space_sprite.rect.height*3
-    number_x = space_x // (alien_space_sprite.rect.width*2)
-    number_y = space_y // (alien_space_sprite.rect.height*2)
-    for y in range(number_y):
-        for x in range(number_x):
-            alien_sprite = pygame.sprite.Sprite()
-            alien_sprite.image = pygame.transform.scale(pygame.image.load("image/alien1.png"),(64,64))
-            alien_sprite.rect = alien_sprite.image.get_rect()
-            alien_sprite.rect.x = alien_sprite.rect.width + alien_sprite.rect.width*2*x
-            alien_sprite.rect.y = alien_sprite.rect.height + alien_sprite.rect.height*2*y
-            alien_list.add(alien_sprite)
+        self.ship_sprite = pygame.sprite.Sprite()
+        self.ship_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/ship1.png"),(64,64))
+        self.ship_sprite.rect = self.ship_sprite.image.get_rect()
+        self.ship_sprite.rect.midbottom = self.window_rect.midbottom
+        self.ship_moving_speed = 6
+        self.ship_moving_up = False
+        self.ship_moving_down = False
+        self.ship_moving_right = False
+        self.ship_moving_left = False
+        self.ship_blood = 3
 
-alien_spawn()
+        self.bullet_list = pygame.sprite.Group()
+        self.bullet_moving_speed = 6
 
-font32 = pygame.font.Font("font/LockClock.ttf", 32)
-font64 = pygame.font.Font("font/LockClock.ttf", 64)
+        self.alien_list = pygame.sprite.Group()
+        self.alien_moving_speed = 16
+        self.alien_direction = 3
 
-text1 = font32.render("SPACE INVADERS 1978 2022RX", True, (255,255,255))
-text1_rect = text1.get_rect()
-text1_rect.midtop = window_rect.midtop
+    def set(self):
 
-text2 = font32.render("Press SPACE to Fire", True, (255,255,255))
-text2_rect = text2.get_rect()
-text2_rect.midtop = text1_rect.midbottom
+        self.alien_spawn()
 
-text3 = font32.render("Press Esc Out", True, (255,255,255))
-text3_rect = text3.get_rect()
-text3_rect.midtop = text2_rect.midbottom
+        self.font32 = pygame.font.Font("assets/graphics/font/LockClock.ttf", 32)
+        self.font64 = pygame.font.Font("assets/graphics/font/LockClock.ttf", 64)
 
-pygame.display.flip()
+        self.text1 = self.font32.render("SPACE INVADERS 1978 2022RX", True, (255,255,255))
+        self.text1_rect = self.text1.get_rect()
+        self.text1_rect.midtop = self.window_rect.midtop
 
-while RUN:
+        self.text2 = self.font32.render("Press SPACE to Fire", True, (255,255,255))
+        self.text2_rect = self.text2.get_rect()
+        self.text2_rect.midtop = self.text1_rect.midbottom
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            RUN = False
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                RUN = False
-                sys.exit()
+        self.text3 = self.font32.render("Press Esc Out", True, (255,255,255))
+        self.text3_rect = self.text3.get_rect()
+        self.text3_rect.midtop = self.text2_rect.midbottom
 
-            if event.key == pygame.K_UP or event.key == pygame.K_w:
-                ship_moving_up = True
-            if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                ship_moving_down = True
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                ship_moving_left = True
-            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                ship_moving_right = True
-            if event.key == pygame.K_SPACE:
-                bullet_sprite = pygame.sprite.Sprite()
-                bullet_sprite.rect = pygame.Rect(0,0,8,16)
-                bullet_sprite.rect.midbottom = ship_sprite.rect.midtop
-                # bullet_sprite.rect.y += 64
-                bullet_list.add(bullet_sprite)
+        pygame.display.flip()
+
+    def run(self):
+
+        self.set()
+
+        # Mainloop =========================================================================================================
+
+        while self.RUN:
+
+            for self.event in pygame.event.get():
+                if self.event.type == pygame.QUIT:
+                    self.RUN = False
+                    sys.exit()
+                if self.event.type == pygame.KEYDOWN:
+                    if self.event.key == pygame.K_ESCAPE:
+                        self.RUN = False
+                        sys.exit()
+
+                    if self.event.key == pygame.K_UP or self.event.key == pygame.K_w:
+                        self.ship_moving_up = True
+                    if self.event.key == pygame.K_DOWN or self.event.key == pygame.K_s:
+                        self.ship_moving_down = True
+                    if self.event.key == pygame.K_LEFT or self.event.key == pygame.K_a:
+                        self.ship_moving_left = True
+                    if self.event.key == pygame.K_RIGHT or self.event.key == pygame.K_d:
+                        self.ship_moving_right = True
+                    if self.event.key == pygame.K_SPACE:
+                        bullet_sprite = pygame.sprite.Sprite()
+                        bullet_sprite.rect = pygame.Rect(0,0,8,16)
+                        bullet_sprite.rect.midbottom = self.ship_sprite.rect.midtop
+                        # bullet_sprite.rect.y += 64
+                        self.bullet_list.add(bullet_sprite)
+                    
+                if self.event.type == pygame.KEYUP:
+                    if self.event.key == pygame.K_UP or self.event.key == pygame.K_w:
+                        self.ship_moving_up = False
+                    if self.event.key == pygame.K_DOWN or self.event.key == pygame.K_s:
+                        self.ship_moving_down = False
+                    if self.event.key == pygame.K_LEFT or self.event.key == pygame.K_a:
+                        self.ship_moving_left = False
+                    if self.event.key == pygame.K_RIGHT or self.event.key == pygame.K_d:
+                        self.ship_moving_right = False
+
+            if self.ship_moving_up and self.ship_sprite.rect.top > 0:
+                self.ship_sprite.rect.y -= self.ship_moving_speed
+            if self.ship_moving_down and self.ship_sprite.rect.bottom < self.window_rect.bottom:
+                self.ship_sprite.rect.y += self.ship_moving_speed
+            if self.ship_moving_right and self.ship_sprite.rect.right < self.window_rect.right:
+                self.ship_sprite.rect.x += self.ship_moving_speed
+            if self.ship_moving_left and self.ship_sprite.rect.left > 0:
+                self.ship_sprite.rect.x -= self.ship_moving_speed
+
+            self.window.fill((0, 0, 0))
             
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_UP or event.key == pygame.K_w:
-                ship_moving_up = False
-            if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                ship_moving_down = False
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                ship_moving_left = False
-            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                ship_moving_right = False
+            for bullet in self.bullet_list:
+                pygame.draw.rect(self.window, (255,0,0), bullet)
+                bullet.rect.y -= self.bullet_moving_speed
+                if bullet.rect.bottom < 0:
+                    self.bullet_list.remove(bullet)
+            for alien in self.alien_list:
+                alien.rect.x += 1*self.alien_direction
+                if alien.rect.right >= self.window_rect.right or alien.rect.left <= 0:
+                    self.alien_direction *= -1
+                    for alien in self.alien_list:
+                        alien.rect.y += self.alien_moving_speed
 
-    if ship_moving_up and ship_sprite.rect.top > 0:
-        ship_sprite.rect.y -= ship_moving_speed
-    if ship_moving_down and ship_sprite.rect.bottom < window_rect.bottom:
-        ship_sprite.rect.y += ship_moving_speed
-    if ship_moving_right and ship_sprite.rect.right < window_rect.right:
-        ship_sprite.rect.x += ship_moving_speed
-    if ship_moving_left and ship_sprite.rect.left > 0:
-        ship_sprite.rect.x -= ship_moving_speed
+                if alien.rect.bottom >= self.window_rect.bottom:
+                    self.game_over()
 
-    window.fill((0, 0, 0))
-    
-    for bullet in bullet_list:
-        pygame.draw.rect(window, (255,0,0), bullet)
-        bullet.rect.y -= bullet_moving_speed
-        if bullet.rect.bottom < 0:
-            bullet_list.remove(bullet)
-    for alien in alien_list:
-        alien.rect.x += 1*alien_direction
-        if alien.rect.right >= window_rect.right or alien.rect.left <= 0:
-            alien_direction *= -1
-            for alien in alien_list:
-                alien.rect.y += alien_moving_speed
+            self.window.blit(self.ship_sprite.image, self.ship_sprite.rect)
+            self.alien_list.draw(self.window)
+            self.window.blit(self.text1, self.text1_rect)
+            self.window.blit(self.text2, self.text2_rect)
+            self.window.blit(self.text3, self.text3_rect)
 
-        if alien.rect.bottom >= window_rect.bottom:
-            alien_list.empty()
-            bullet_list.empty()
-            alien_spawn()
-            ship_sprite.rect.midbottom = window_rect.midbottom
-            time.sleep(0.5)
-            ship_blood -= 1
-            if ship_blood == 0:
-                RUN = False
-                sys.exit()
+            self.text4 = self.font64.render("Ship Blood :"+str(self.ship_blood), True, (255,255,255))
+            self.text4_rect = self.text4.get_rect()
+            self.text4_rect.midtop = self.text3_rect.midbottom
+            self.window.blit(self.text4, self.text4_rect)
 
-    window.blit(ship_sprite.image, ship_sprite.rect)
-    alien_list.draw(window)
-    window.blit(text1, text1_rect)
-    window.blit(text2, text2_rect)
-    window.blit(text3, text3_rect)
+            pygame.sprite.groupcollide(self.bullet_list, self.alien_list, True, True)
 
-    text4 = font64.render("Ship Blood :"+str(ship_blood), True, (255,255,255))
-    text4_rect = text4.get_rect()
-    text4_rect.midtop = text3_rect.midbottom
-    window.blit(text4, text4_rect)
+            if not self.alien_list:
+                self.alien_spawn()
 
-    pygame.sprite.groupcollide(bullet_list, alien_list, True, True)
+            if pygame.sprite.spritecollideany(self.ship_sprite, self.alien_list):
+                self.game_over()
 
-    if not alien_list:
-        alien_spawn()
+            pygame.display.update()
+            self.window_clock.tick(60)
 
-    if pygame.sprite.spritecollideany(ship_sprite, alien_list):
-        alien_list.empty()
-        bullet_list.empty()
-        alien_spawn()
-        ship_sprite.rect.midbottom = window_rect.midbottom
+    # Components ===========================================================================================================
+
+    def alien_spawn(self):
+        self.alien_space_sprite = pygame.sprite.Sprite()
+        self.alien_space_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/alien1.png"),(64,64))
+        self.alien_space_sprite.rect = self.alien_space_sprite.image.get_rect()
+        self.window_width, self.window_height = self.window_rect.size
+        self.ship_width, self.ship_height = self.ship_sprite.rect.size
+        self.space_x = self.window_width - self.alien_space_sprite.rect.width*2
+        self.space_y = self.window_height - self.ship_height - self.alien_space_sprite.rect.height*3
+        self.number_x = self.space_x // (self.alien_space_sprite.rect.width*2)
+        self.number_y = self.space_y // (self.alien_space_sprite.rect.height*2)
+        for y in range(self.number_y):
+            for x in range(self.number_x):
+                alien_sprite = pygame.sprite.Sprite()
+                alien_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/alien1.png"),(64,64))
+                alien_sprite.rect = alien_sprite.image.get_rect()
+                alien_sprite.rect.x = alien_sprite.rect.width + alien_sprite.rect.width*2*x
+                alien_sprite.rect.y = alien_sprite.rect.height + alien_sprite.rect.height*2*y
+                self.alien_list.add(alien_sprite)
+
+    def game_over(self):
+        self.alien_list.empty()
+        self.bullet_list.empty()
+        self.alien_spawn()
+        self.ship_sprite.rect.midbottom = self.window_rect.midbottom
         time.sleep(0.5)
-        ship_blood -= 1
-        if ship_blood == 0:
+        self.ship_blood -= 1
+        if self.ship_blood == 0:
             RUN = False
             sys.exit()
 
-    pygame.display.update()
-    window_clock.tick(60)
-
-    
+if __name__ == '__main__':
+    game = Game()
+    game.run()
