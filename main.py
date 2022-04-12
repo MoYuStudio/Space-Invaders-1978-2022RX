@@ -34,11 +34,7 @@ class Game:
         self.save_read_data = {}
 
         # Need Save =
-        self.save_read()
-        if len(self.save_read_data) != 0:
-            self.top_mark = self.save_read_data['top_mark']
-        else:
-            self.top_mark = 0
+        
 
         # Window =
         self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -62,6 +58,7 @@ class Game:
         # Bullet =
         self.bullet_list = pygame.sprite.Group()
         self.bullet_moving_speed = 6
+        self.bullet_width = 8
 
         # Alien =
         self.alien_list = pygame.sprite.Group()
@@ -69,6 +66,11 @@ class Game:
         # self.alien_direction = 3
         self.alien_moving_speed = 12
         self.alien_direction = 1
+
+        # Buff =
+        self.buff_list = pygame.sprite.Group()
+        self.buff_moving_speed = 3
+        self.buff_timer = 0
 
         # Font =
         self.font32 = pygame.font.Font("assets/graphics/font/LockClock.ttf", 32)
@@ -162,6 +164,8 @@ class Game:
 
     def page_MainMenu(self):
 
+        self.load()
+
         self.window.fill((0, 0, 0))
 
         self.window.blit(self.MainMenu_text1, self.MainMenu_text1_rect)
@@ -173,6 +177,8 @@ class Game:
         self.window.blit(self.MainMenu_text2, self.MainMenu_text2_rect)
 
     def page_MainGame(self):
+
+        self.buff_spawn()
 
         if self.ship_moving_up and self.ship_sprite.rect.top > 0:
             self.ship_sprite.rect.y -= self.ship_moving_speed
@@ -193,6 +199,8 @@ class Game:
 
         for alien in self.alien_list:
             alien.rect.x += 1*self.alien_direction
+            if alien.rect.top <= self.window_rect.top:
+                alien.rect.y += self.alien_moving_speed
             if alien.rect.right >= self.window_rect.right or alien.rect.left <= 0:
                 self.alien_direction *= -1
                 for alien in self.alien_list:
@@ -201,8 +209,19 @@ class Game:
             if alien.rect.bottom >= self.window_rect.bottom:
                 self.game_over()
 
+        for buff in self.buff_list:
+            buff.rect.y += self.buff_moving_speed
+            if buff.rect.bottom >= self.window_rect.bottom:
+                self.buff_list.remove(buff)
+
         self.window.blit(self.ship_sprite.image, self.ship_sprite.rect)
         self.alien_list.draw(self.window)
+
+        try:
+            self.buff_list.draw(self.window)
+        except:
+            pass
+
         self.window.blit(self.text1, self.text1_rect)
         self.window.blit(self.text2, self.text2_rect)
         self.window.blit(self.text3, self.text3_rect)
@@ -224,13 +243,25 @@ class Game:
             hit_sound_effect = pygame.mixer.Sound("assets/sound/effect/toggle_00"+str(random_hit_sound_effect)+".ogg")
             hit_sound_effect.set_volume(0.1)
             pygame.mixer.Channel(1).play(hit_sound_effect)
-            
+        
+        if pygame.sprite.spritecollide(self.ship_sprite, self.buff_list, True):
+            self.buff_timer = 120
+
+
+        if self.buff_timer > 0:
+            self.bullet_width = 300
+            self.buff_timer -= 1
+        if self.buff_timer <= 0:
+            self.bullet_width = 8
+
 
         if not self.alien_list:
             self.alien_spawn()
 
         if pygame.sprite.spritecollideany(self.ship_sprite, self.alien_list):
             self.game_over()
+
+        self.save()
 
     def page_GameOver(self):
 
@@ -257,7 +288,7 @@ class Game:
             self.ship_moving_right = True
         if self.event.key == pygame.K_SPACE:
             bullet_sprite = pygame.sprite.Sprite()
-            bullet_sprite.rect = pygame.Rect(0,0,8,16)
+            bullet_sprite.rect = pygame.Rect(0,0,self.bullet_width,16)
             bullet_sprite.rect.midbottom = self.ship_sprite.rect.midtop
             self.bullet_list.add(bullet_sprite)
     def event_MainGame_keyup(self):
@@ -277,6 +308,7 @@ class Game:
             pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
             time.sleep(0.1)
             self.page = "MainGame"
+            self.mark = 0
             
         if pygame.Rect.collidepoint(self.MainMenu_text3_rect,self.event.pos):
             pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
@@ -302,8 +334,18 @@ class Game:
                 alien_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/alien1.png"),(64,64))
                 alien_sprite.rect = alien_sprite.image.get_rect()
                 alien_sprite.rect.x = alien_sprite.rect.width + alien_sprite.rect.width*2*x
-                alien_sprite.rect.y = alien_sprite.rect.height + alien_sprite.rect.height*2*y
+                alien_sprite.rect.y = alien_sprite.rect.height + alien_sprite.rect.height*2*y - self.space_y
                 self.alien_list.add(alien_sprite)
+
+    def buff_spawn(self):
+        try_buff_spawn = random.randint(1,1000)
+        if try_buff_spawn == 1:
+            buff_sprite = pygame.sprite.Sprite()
+            buff_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/buff1.png"),(32,32))
+            buff_sprite.rect = buff_sprite.image.get_rect()
+            buff_sprite.rect.x = random.randint(buff_sprite.rect.width,self.window_width-buff_sprite.rect.width*2)
+            buff_sprite.rect.y = -buff_sprite.rect.height
+            self.buff_list.add(buff_sprite)
 
     def game_over(self):
         self.alien_list.empty()
@@ -320,10 +362,7 @@ class Game:
             sound_effect = pygame.mixer.Sound("assets/sound/effect/question_001.ogg")
             sound_effect.set_volume(0.3)
             pygame.mixer.Channel(1).play(sound_effect)
-            if self.mark >= self.top_mark:
-                self.save_write_data = {"top_mark":self.mark}
-                self.save_write()
-                self.mark = 0
+            self.save()
 
     def save_write(self):
         f=open(self.save_path + self.save_slot_name,'wb')
@@ -337,6 +376,17 @@ class Game:
         except:
             pass
         return self.save_read_data
+    
+    def save(self):
+        if self.mark >= self.top_mark:
+                self.save_write_data = {"top_mark":self.mark}
+                self.save_write()
+    def load(self):
+        self.save_read()
+        if len(self.save_read_data) != 0:
+            self.top_mark = self.save_read_data['top_mark']
+        else:
+            self.top_mark = 0
 
 
 if __name__ == '__main__':
