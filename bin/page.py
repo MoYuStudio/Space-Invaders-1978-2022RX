@@ -2,11 +2,17 @@
 import random
 import pygame
 
-import config
+import config as C
 
 class Page:
     def __init__(self):
-        self.window = config.window
+        self.window = C.window
+        self.window_rect = C.window_rect
+        self.window_width = C.window_width
+        self.window_height = C.window_height
+
+        self.font32 = C.font32
+        self.font64 = C.font64
         
     def menu_main(self):
 
@@ -48,11 +54,11 @@ class Page:
         self.MenuMain_text5_rect.y += self.MenuMain_text5_rect.height//2
         self.window.blit(self.MenuMain_text5, self.MenuMain_text5_rect)
 
-        self.MenuMain_text6 = self.font32.render("Your Top Mark "+str(self.top_mark), True, (255,255,255))
-        self.MenuMain_text6_rect = self.MenuMain_text6.get_rect()
-        self.MenuMain_text6_rect.midtop = self.window_rect.midtop
-        self.MenuMain_text6_rect.x = self.window_rect.width-self.MenuMain_text6_rect.width
-        self.window.blit(self.MenuMain_text6, self.MenuMain_text6_rect)
+        # self.MenuMain_text6 = self.font32.render("Your Top Mark "+str(self.top_mark), True, (255,255,255))
+        # self.MenuMain_text6_rect = self.MenuMain_text6.get_rect()
+        # self.MenuMain_text6_rect.midtop = self.window_rect.midtop
+        # self.MenuMain_text6_rect.x = self.window_rect.width-self.MenuMain_text6_rect.width
+        # self.window.blit(self.MenuMain_text6, self.MenuMain_text6_rect)
 
     def game_main(self):
         pass

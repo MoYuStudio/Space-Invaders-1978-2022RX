@@ -203,7 +203,30 @@ class Game:
 
         self.window.fill((0, 0, 0))
         
-
+        try:
+            self.alien1_list.draw(self.window)
+        except:
+            pass
+        try:
+            self.alien2_list.draw(self.window)
+        except:
+            pass
+        try:
+            self.alien3_list.draw(self.window)
+        except:
+            pass
+        try:
+            self.alien4_list.draw(self.window)
+        except:
+            pass
+        try:
+            self.alien5_list.draw(self.window)
+        except:
+            pass
+        try:
+            self.alien_group1_list.draw(self.window)
+        except:
+            pass
 
 
 
