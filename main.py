@@ -3,7 +3,6 @@
 #                 MoYu Studio © 2021 - 2022                    #
 ################################################################
 #                SPACE INVADERS 1978 2022RX                    #
-#                    Dv20220411 a1 Bata                        #
 ################################################################
 
 import os
@@ -62,7 +61,9 @@ class Game:
         self.alien3_list = pygame.sprite.Group()
         self.alien4_list = pygame.sprite.Group()
         self.alien5_list = pygame.sprite.Group()
+        self.alien_list_list = [self.alien1_list, self.alien2_list, self.alien3_list, self.alien4_list, self.alien5_list]
         self.alien_group1_list = pygame.sprite.Group()
+        self.alien_group_list_list = [self.alien_group1_list]
         self.alien1_moving_speed = 1
         self.alien2_moving_speed = 1
         self.alien3_moving_speed = 1
@@ -95,7 +96,7 @@ class Game:
         self.bullet1_width = 8
         self.bullet1_timer = 0
         self.bullet1_color = (50,250,50)
-        self.bullet2_moving_speed = 2
+        self.bullet2_moving_speed = 3
         self.bullet2_width = 8
         self.bullet2_timer = 0
         self.bullet2_color = (150,50,250)
@@ -156,21 +157,11 @@ class Game:
 
         pygame.mixer.set_num_channels(10)  # default is 8
 
-
     def set(self):
-
-        self.alien_spawn()
-
-
-
-        self.GameOver_text1 = self.font128.render("Game Over", True, (255,255,255))
-        self.GameOver_text1_rect = self.GameOver_text1.get_rect()
-        self.GameOver_text1_rect.center = self.window_rect.center
 
         bgm = pygame.mixer.Sound("assets/sound/song/魔王魂 旧ゲーム音楽 ラストボス02.mp3")
         bgm.set_volume(0.1)
         pygame.mixer.Channel(0).play(bgm,loops=0)
-        
 
         pygame.display.flip()
 
@@ -190,7 +181,6 @@ class Game:
                 if self.event.type == pygame.MOUSEMOTION:
                     if self.page == "MenuMain":
                         self.event_MenuMain_mousemotion()
-
                 if self.event.type == pygame.MOUSEBUTTONDOWN:
                     if self.page == "MenuMain":
                         self.event_MenuMain_mousebuttondown()
@@ -198,12 +188,9 @@ class Game:
                 if self.event.type == pygame.KEYDOWN:
                     if self.event.key == pygame.K_ESCAPE:
                         self.page = "MenuMain"
-
                     if self.page == "GameMain":
                         self.event_GameMain_keydown()
-                    
                 if self.event.type == pygame.KEYUP:
-
                     if self.page == "GameMain":
                         self.event_GameMain_keyup()
                     
@@ -226,58 +213,62 @@ class Game:
 
         self.window.fill((0, 0, 0))
 
-        self.MenuMain_text1 = self.font64.render("SPACE INVADERS 1978", True, (random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-        self.MenuMain_text1_rect = self.MenuMain_text1.get_rect()
-        self.MenuMain_text1_rect.midtop = self.window_rect.midtop
-        self.MenuMain_text1_rect.x = self.window_rect.width//36
-        self.MenuMain_text1_rect.y += self.MenuMain_text1_rect.height//4
-        self.window.blit(self.MenuMain_text1, self.MenuMain_text1_rect)
+        def text_render():
+            self.MenuMain_text1 = self.font64.render("SPACE INVADERS 1978", True, (random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+            self.MenuMain_text1_rect = self.MenuMain_text1.get_rect()
+            self.MenuMain_text1_rect.midtop = self.window_rect.midtop
+            self.MenuMain_text1_rect.x = self.window_rect.width//36
+            self.MenuMain_text1_rect.y += self.MenuMain_text1_rect.height//4
+            self.window.blit(self.MenuMain_text1, self.MenuMain_text1_rect)
 
-        self.MenuMain_text2 = self.font32.render("Power BY MoYuStudio", True, (random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-        self.MenuMain_text2_rect = self.MenuMain_text2.get_rect()
-        self.MenuMain_text2_rect.midtop = self.MenuMain_text1_rect.midbottom
-        self.MenuMain_text2_rect.x = self.window_rect.width//36
-        self.MenuMain_text2_rect.y += self.MenuMain_text2_rect.height//4
-        self.window.blit(self.MenuMain_text2, self.MenuMain_text2_rect)
+            self.MenuMain_text2 = self.font32.render("Power BY MoYuStudio", True, (random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+            self.MenuMain_text2_rect = self.MenuMain_text2.get_rect()
+            self.MenuMain_text2_rect.midtop = self.MenuMain_text1_rect.midbottom
+            self.MenuMain_text2_rect.x = self.window_rect.width//36
+            self.MenuMain_text2_rect.y += self.MenuMain_text2_rect.height//4
+            self.window.blit(self.MenuMain_text2, self.MenuMain_text2_rect)
 
-        self.MenuMain_text3_mousemotion_color = (255,255,255)
-        self.MenuMain_text3 = self.font64.render("Start", True, self.MenuMain_text3_mousemotion_color)
-        self.MenuMain_text3_rect = self.MenuMain_text3.get_rect()
-        self.MenuMain_text3_rect.midtop = self.MenuMain_text1_rect.midbottom
-        self.MenuMain_text3_rect.x = self.window_rect.width//36
-        self.MenuMain_text3_rect.y += self.MenuMain_text2_rect.height+self.MenuMain_text3_rect.height
-        self.window.blit(self.MenuMain_text3, self.MenuMain_text3_rect)
+            self.MenuMain_text3_mousemotion_color = (255,255,255)
+            self.MenuMain_text3 = self.font64.render("Start", True, self.MenuMain_text3_mousemotion_color)
+            self.MenuMain_text3_rect = self.MenuMain_text3.get_rect()
+            self.MenuMain_text3_rect.midtop = self.MenuMain_text1_rect.midbottom
+            self.MenuMain_text3_rect.x = self.window_rect.width//36
+            self.MenuMain_text3_rect.y += self.MenuMain_text2_rect.height+self.MenuMain_text3_rect.height
+            self.window.blit(self.MenuMain_text3, self.MenuMain_text3_rect)
 
-        self.MenuMain_text4 = self.font64.render("Setting", True, (150,150,150))
-        self.MenuMain_text4_rect = self.MenuMain_text4.get_rect()
-        self.MenuMain_text4_rect.midtop = self.MenuMain_text3_rect.midbottom
-        self.MenuMain_text4_rect.x = self.window_rect.width//36
-        self.MenuMain_text4_rect.y += self.MenuMain_text4_rect.height//2
-        self.window.blit(self.MenuMain_text4, self.MenuMain_text4_rect)
+            self.MenuMain_text4 = self.font64.render("Setting", True, (150,150,150))
+            self.MenuMain_text4_rect = self.MenuMain_text4.get_rect()
+            self.MenuMain_text4_rect.midtop = self.MenuMain_text3_rect.midbottom
+            self.MenuMain_text4_rect.x = self.window_rect.width//36
+            self.MenuMain_text4_rect.y += self.MenuMain_text4_rect.height//2
+            self.window.blit(self.MenuMain_text4, self.MenuMain_text4_rect)
 
-        self.MenuMain_text5 = self.font64.render("Quit", True, (255,255,255))
-        self.MenuMain_text5_rect = self.MenuMain_text4.get_rect()
-        self.MenuMain_text5_rect.midtop = self.MenuMain_text4_rect.midbottom
-        self.MenuMain_text5_rect.x = self.window_rect.width//36
-        self.MenuMain_text5_rect.y += self.MenuMain_text5_rect.height//2
-        self.window.blit(self.MenuMain_text5, self.MenuMain_text5_rect)
+            self.MenuMain_text5 = self.font64.render("Quit", True, (255,255,255))
+            self.MenuMain_text5_rect = self.MenuMain_text4.get_rect()
+            self.MenuMain_text5_rect.midtop = self.MenuMain_text4_rect.midbottom
+            self.MenuMain_text5_rect.x = self.window_rect.width//36
+            self.MenuMain_text5_rect.y += self.MenuMain_text5_rect.height//2
+            self.window.blit(self.MenuMain_text5, self.MenuMain_text5_rect)
 
-        self.MenuMain_text6 = self.font32.render("Your Top Mark "+str(self.top_mark), True, (255,255,255))
-        self.MenuMain_text6_rect = self.MenuMain_text6.get_rect()
-        self.MenuMain_text6_rect.midtop = self.window_rect.midtop
-        self.MenuMain_text6_rect.x = self.window_rect.width-self.MenuMain_text6_rect.width
-        self.window.blit(self.MenuMain_text6, self.MenuMain_text6_rect)
+            self.MenuMain_text6 = self.font32.render("Your Top Mark "+str(self.top_mark), True, (255,255,255))
+            self.MenuMain_text6_rect = self.MenuMain_text6.get_rect()
+            self.MenuMain_text6_rect.midtop = self.window_rect.midtop
+            self.MenuMain_text6_rect.x = self.window_rect.width-self.MenuMain_text6_rect.width
+            self.window.blit(self.MenuMain_text6, self.MenuMain_text6_rect)
+        text_render()
 
     def page_GameMain(self):
 
-        if self.ship_moving_up and self.ship_sprite.rect.top > 0:
-            self.ship_sprite.rect.y -= self.ship_moving_speed
-        if self.ship_moving_down and self.ship_sprite.rect.bottom < self.window_rect.bottom:
-            self.ship_sprite.rect.y += self.ship_moving_speed
-        if self.ship_moving_right and self.ship_sprite.rect.right < self.window_rect.right:
-            self.ship_sprite.rect.x += self.ship_moving_speed
-        if self.ship_moving_left and self.ship_sprite.rect.left > 0:
-            self.ship_sprite.rect.x -= self.ship_moving_speed
+        def ship_move():
+            if self.ship_moving_up and self.ship_sprite.rect.top > 0:
+                self.ship_sprite.rect.y -= self.ship_moving_speed
+            if self.ship_moving_down and self.ship_sprite.rect.bottom < self.window_rect.bottom:
+                self.ship_sprite.rect.y += self.ship_moving_speed
+            if self.ship_moving_right and self.ship_sprite.rect.right < self.window_rect.right:
+                self.ship_sprite.rect.x += self.ship_moving_speed
+            if self.ship_moving_left and self.ship_sprite.rect.left > 0:
+                self.ship_sprite.rect.x -= self.ship_moving_speed
+        ship_move()
 
         self.window.fill((0, 0, 0))
 
@@ -307,31 +298,16 @@ class Game:
             if bullet.rect.bottom < 0:
                 self.bullet5_list.remove(bullet)
         
-        try:
-            self.alien1_list.draw(self.window)
-        except:
-            pass
-        try:
-            self.alien2_list.draw(self.window)
-        except:
-            pass
-        try:
-            self.alien3_list.draw(self.window)
-        except:
-            pass
-        try:
-            self.alien4_list.draw(self.window)
-        except:
-            pass
-        try:
-            self.alien5_list.draw(self.window)
-        except:
-            pass
-        try:
-            self.alien_group1_list.draw(self.window)
-        except:
-            pass
-
+        for alien_list in self.alien_list_list:
+            try:
+                alien_list.draw(self.window)
+            except:
+                pass
+        for alien_group_list in self.alien_group_list_list:
+            try:
+                alien_group_list.draw(self.window)
+            except:
+                pass
         for buff_list in self.buff_list_list:
             try:
                 buff_list.draw(self.window)
@@ -349,25 +325,29 @@ class Game:
 
         self.window.blit(self.ship_sprite.image, self.ship_sprite.rect)
 
-        self.GameMain_text2 = self.font32.render("Press SPACE or F to Fire", True, (255,255,255))
-        self.GameMain_text2_rect = self.GameMain_text2.get_rect()
-        self.GameMain_text2_rect.midtop = self.window_rect.midtop
-        self.window.blit(self.GameMain_text2, self.GameMain_text2_rect)
+        def text_rander():
+            # self.GameMain_text2 = self.font32.render("Press SPACE or F to Fire", True, (255,255,255))
+            # self.GameMain_text2_rect = self.GameMain_text2.get_rect()
+            # self.GameMain_text2_rect.midtop = self.window_rect.midtop
+            # self.window.blit(self.GameMain_text2, self.GameMain_text2_rect)
 
-        self.GameMain_text3 = self.font32.render("Press Esc Out", True, (255,255,255))
-        self.GameMain_text3_rect = self.GameMain_text3.get_rect()
-        self.GameMain_text3_rect.midtop = self.GameMain_text2_rect.midbottom
-        self.window.blit(self.GameMain_text3, self.GameMain_text3_rect)
+            # self.GameMain_text3 = self.font32.render("Press Esc Out", True, (255,255,255))
+            # self.GameMain_text3_rect = self.GameMain_text3.get_rect()
+            # self.GameMain_text3_rect.midtop = self.GameMain_text2_rect.midbottom
+            # self.window.blit(self.GameMain_text3, self.GameMain_text3_rect)
 
-        self.GameMain_text4 = self.font64.render("Ship Blood :"+str(self.ship_blood), True, (255,255,255))
-        self.GameMain_text4_rect = self.GameMain_text4.get_rect()
-        self.GameMain_text4_rect.midtop = self.GameMain_text3_rect.midbottom
-        self.window.blit(self.GameMain_text4, self.GameMain_text4_rect)
+            self.GameMain_text4 = self.font64.render("Ship Blood :"+str(self.ship_blood), True, (255,255,255))
+            self.GameMain_text4_rect = self.GameMain_text4.get_rect()
+            self.GameMain_text4_rect.x = self.window_rect.width//36
+            self.GameMain_text4_rect.y = self.GameMain_text4_rect.height//8
+            self.window.blit(self.GameMain_text4, self.GameMain_text4_rect)
 
-        self.GameMain_text5 = self.font64.render("Mark :"+str(self.mark), True, (255,255,255))
-        self.GameMain_text5_rect = self.GameMain_text5.get_rect()
-        self.GameMain_text5_rect.midtop = self.GameMain_text4_rect.midbottom
-        self.window.blit(self.GameMain_text5, self.GameMain_text5_rect)
+            self.GameMain_text5 = self.font64.render("Mark :"+str(self.mark), True, (255,255,255))
+            self.GameMain_text5_rect = self.GameMain_text5.get_rect()
+            self.GameMain_text5_rect.midleft = self.GameMain_text4_rect.midright
+            self.GameMain_text5_rect.x += self.window_rect.width//8
+            self.window.blit(self.GameMain_text5, self.GameMain_text5_rect)
+        text_rander()
 
         for alien in self.alien1_list:
             alien.rect.y += self.alien1_moving_speed
@@ -417,13 +397,13 @@ class Game:
             self.buff4_timer += 1
         if pygame.sprite.spritecollide(self.ship_sprite, self.buff5_list, True):
             self.buff5_timer += 360
-            
+        
         # buff1
         if self.buff1_timer > 0:
-            self.bullet_type = '3'
+            self.bullet1_width = 300
             self.buff1_timer -= 1
         if self.buff1_timer <= 0:
-            self.bullet_type = '1'
+            self.bullet1_width = 8
             self.buff1_timer = 0
         # buff2
         if self.buff2_timer > 0:
@@ -497,7 +477,7 @@ class Game:
                     bullet_sprite.rect.midbottom = self.ship_sprite.rect.midtop
                     self.bullet1_list.add(bullet_sprite)
                     self.bullet1_timer = 15
-            if self.bullet_type == '2':
+            elif self.bullet_type == '2':
                 if self.bullet2_timer > 0:
                     self.bullet2_timer -= 1
                 if self.bullet2_timer <= 0:
@@ -506,15 +486,6 @@ class Game:
                     bullet_sprite.rect.midbottom = self.ship_sprite.rect.midtop
                     self.bullet2_list.add(bullet_sprite)
                     self.bullet2_timer = 5
-            if self.bullet_type == '3':
-                if self.bullet3_timer > 0:
-                    self.bullet3_timer -= 1
-                if self.bullet3_timer <= 0:
-                    bullet_sprite = pygame.sprite.Sprite()
-                    bullet_sprite.rect = pygame.Rect(0,0,self.bullet3_width,16)
-                    bullet_sprite.rect.midbottom = self.ship_sprite.rect.midtop
-                    self.bullet3_list.add(bullet_sprite)
-                    self.bullet3_timer = 15
 
         if self.buff5_effect == True:
             if pygame.sprite.spritecollideany(self.ship_sprite, self.alien1_list) or \
@@ -532,6 +503,10 @@ class Game:
         self.window.fill((0, 0, 0))
 
         self.window.blit(self.GameOver_text1, self.GameOver_text1_rect)
+
+        self.GameOver_text1 = self.font128.render("Game Over", True, (255,255,255))
+        self.GameOver_text1_rect = self.GameOver_text1.get_rect()
+        self.GameOver_text1_rect.center = self.window_rect.center
 
         self.GameOver_text2 = self.font64.render("Your Mark is "+str(self.mark), True, (255,255,255))
         self.GameOver_text2_rect = self.GameOver_text2.get_rect()
@@ -575,7 +550,6 @@ class Game:
     def event_MenuMain_mousemotion(self):
 
         pass
-
     def event_MenuMain_mousebuttondown(self):
         # start
         if pygame.Rect.collidepoint(self.MenuMain_text3_rect,self.event.pos):
@@ -586,7 +560,7 @@ class Game:
             
         if pygame.Rect.collidepoint(self.MenuMain_text5_rect,self.event.pos):
             pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
-            time.sleep(0.1)
+            time.sleep(0.2)
             self.RUN = False
             sys.exit()
 
