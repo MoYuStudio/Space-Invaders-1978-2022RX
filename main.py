@@ -69,6 +69,7 @@ class Game:
         self.alien3_moving_speed = 1
         self.alien4_moving_speed = 1
         self.alien5_moving_speed = 3
+        self.alien_moving_speed_list = [self.alien1_moving_speed, self.alien2_moving_speed, self.alien3_moving_speed, self.alien4_moving_speed, self.alien5_moving_speed]
         self.alien_group1_moving_speed = 12
         self.alien_group1_moving_direction_speed = 3
         self.alien3_effect = False
@@ -91,15 +92,16 @@ class Game:
         self.bullet4_list = pygame.sprite.Group()
         self.bullet5_list = pygame.sprite.Group()
         self.bulletA1_list = pygame.sprite.Group()
-        self.bullet_list_list = [self.bullet1_list,self.bullet2_list,self.bullet3_list,self.bullet4_list,self.bullet5_list,self.bulletA1_list]
+        self.bullet_list_list = [self.bullet1_list,self.bullet2_list,self.bullet3_list,self.bullet4_list,self.bullet5_list]
+        self.bulletA_list_list = [self.bulletA1_list]
         self.bullet1_moving_speed = 6
-        self.bullet1_width = 8
+        self.bullet1_width = 12
         self.bullet1_timer = 0
         self.bullet1_color = (50,250,50)
         self.bullet2_moving_speed = 9
-        self.bullet2_width = 8
+        self.bullet2_width = 6
         self.bullet2_timer = 0
-        self.bullet2_color = (150,50,250)
+        self.bullet2_color = (0,250,250)
         self.bullet3_moving_speed = 6
         self.bullet3_width = 300
         self.bullet3_timer = 0
@@ -112,6 +114,18 @@ class Game:
         self.bullet5_width = 8
         self.bullet5_timer = 0
         self.bullet5_color = (50,250,50)
+        self.bulletA1_moving_speed = -3
+        self.bulletA1_width = 8
+        self.bulletA1_timer = 0
+        self.bulletA1_color = (150,50,250)
+        self.bullet_moving_speed_list = [self.bullet1_moving_speed,self.bullet2_moving_speed,self.bullet3_moving_speed,self.bullet4_moving_speed,self.bullet5_moving_speed]
+        self.bullet_width_list = [self.bullet1_width,self.bullet2_width,self.bullet3_width,self.bullet4_width,self.bullet5_width]
+        self.bullet_timer_list = [self.bullet1_timer,self.bullet2_timer,self.bullet3_timer,self.bullet4_timer,self.bullet5_timer]
+        self.bullet_color_list = [self.bullet1_color,self.bullet2_color,self.bullet3_color,self.bullet4_color,self.bullet5_color]
+        self.bulletA_moving_speed_list = [self.bulletA1_moving_speed]
+        self.bulletA_width_list = [self.bulletA1_width]
+        self.bulletA_timer_list = [self.bulletA1_timer]
+        self.bulletA_color_list = [self.bulletA1_color]
 
         # Buff =
         # 1范围Buff 2极速Buff 3清屏Buff 4医疗Buff 5无敌Buff 6穿透Buff
@@ -133,11 +147,11 @@ class Game:
         self.buff4_timer = 0
         self.buff5_timer = 0
         self.buff_timer_list = [self.buff1_timer,self.buff2_timer,self.buff3_timer,self.buff4_timer,self.buff5_timer]
-        self.buff1_timer_add = 240
-        self.buff2_timer_add = 240
+        self.buff1_timer_add = 360
+        self.buff2_timer_add = 360
         self.buff3_timer_add = 1
         self.buff4_timer_add = 1
-        self.buff5_timer_add = 360
+        self.buff5_timer_add = 512
         self.buff_timer_add_list = [self.buff1_timer_add,self.buff2_timer_add,self.buff3_timer_add,self.buff4_timer_add,self.buff5_timer_add]
         self.buff2_effect = True
         self.buff5_effect = True
@@ -272,47 +286,26 @@ class Game:
 
         self.window.fill((0, 0, 0))
 
-        for bullet in self.bullet1_list:
-            pygame.draw.rect(self.window, self.bullet1_color, bullet)
-            bullet.rect.y -= self.bullet1_moving_speed
-            if bullet.rect.bottom < 0:
-                self.bullet1_list.remove(bullet)
-        for bullet in self.bullet2_list:
-            pygame.draw.rect(self.window, self.bullet2_color, bullet)
-            bullet.rect.y -= self.bullet2_moving_speed
-            if bullet.rect.bottom < 0:
-                self.bullet2_list.remove(bullet)
-        for bullet in self.bullet3_list:
-            pygame.draw.rect(self.window, self.bullet3_color, bullet)
-            bullet.rect.y -= self.bullet3_moving_speed
-            if bullet.rect.bottom < 0:
-                self.bullet3_list.remove(bullet)
-        for bullet in self.bullet4_list:
-            pygame.draw.rect(self.window, self.bullet4_color, bullet)
-            bullet.rect.y -= self.bullet4_moving_speed
-            if bullet.rect.bottom < 0:
-                self.bullet4_list.remove(bullet)
-        for bullet in self.bullet5_list:
-            pygame.draw.rect(self.window, self.bullet5_color, bullet)
-            bullet.rect.y -= self.bullet5_moving_speed
-            if bullet.rect.bottom < 0:
-                self.bullet5_list.remove(bullet)
+        for bullet_list in range(len(self.bullet_list_list)):
+            for bullet in self.bullet_list_list[bullet_list]:
+                pygame.draw.rect(self.window, self.bullet_color_list[bullet_list], bullet)
+                bullet.rect.y -= self.bullet_moving_speed_list[bullet_list]
+                if bullet.rect.bottom < 0:
+                    self.bullet_list_list[bullet_list].remove(bullet)
+        for bulletA_list in range(len(self.bulletA_list_list)):
+            for bulletA in self.bulletA_list_list[bulletA_list]:
+                pygame.draw.rect(self.window, self.bulletA_color_list[bulletA_list], bulletA)
+                bulletA.rect.y -= self.bulletA_moving_speed_list[bulletA_list]
+                if bulletA.rect.bottom < 0:
+                    self.bulletA_list_list[bulletA_list].remove(bulletA)
         
-        for alien_list in self.alien_list_list:
-            try:
-                alien_list.draw(self.window)
-            except:
-                pass
-        for alien_group_list in self.alien_group_list_list:
-            try:
-                alien_group_list.draw(self.window)
-            except:
-                pass
-        for buff_list in self.buff_list_list:
-            try:
-                buff_list.draw(self.window)
-            except:
-                pass
+        try_draw_list = [self.alien_list_list,self.alien_group_list_list,self.buff_list_list]
+        for draw_list in try_draw_list:
+            for draw in draw_list:
+                try:
+                    draw.draw(self.window)
+                except:
+                    pass
 
         try_alien3_effect = random.randint(1,3)
         if try_alien3_effect == 1:
@@ -349,26 +342,11 @@ class Game:
             self.window.blit(self.GameMain_text5, self.GameMain_text5_rect)
         text_rander()
 
-        for alien in self.alien1_list:
-            alien.rect.y += self.alien1_moving_speed
-            if alien.rect.bottom >= self.window_rect.bottom:
-                self.game_over()
-        for alien in self.alien2_list:
-            alien.rect.y += self.alien2_moving_speed
-            if alien.rect.bottom >= self.window_rect.bottom:
-                self.game_over()
-        for alien in self.alien3_list:
-            alien.rect.y += self.alien3_moving_speed
-            if alien.rect.bottom >= self.window_rect.bottom:
-                self.game_over()
-        for alien in self.alien4_list:
-            alien.rect.y += self.alien4_moving_speed
-            if alien.rect.bottom >= self.window_rect.bottom:
-                self.game_over()
-        for alien in self.alien5_list:
-            alien.rect.y += self.alien5_moving_speed
-            if alien.rect.bottom >= self.window_rect.bottom:
-                self.game_over()
+        for alienlist_number in range(len(self.alien_list_list)):
+            for alien in self.alien_list_list[alienlist_number]:
+                alien.rect.y += self.alien_moving_speed_list[alienlist_number]
+                if alien.rect.bottom >= self.window_rect.bottom:
+                    self.game_over()
         
         for alien in self.alien_group1_list:
             alien.rect.x += 1*self.alien_group1_moving_direction_speed
@@ -386,6 +364,10 @@ class Game:
                 buff.rect.y += self.buff_moving_speed_list[buff_number]
                 if buff.rect.bottom >= self.window_rect.bottom:
                     self.buff_list_list[buff_number].remove(buff)
+
+        # for buff_list in range(len(self.buff_list_list)):
+        #     if pygame.sprite.spritecollide(self.ship_sprite, self.buff_list_list[buff_list], True):
+        #         self.buff_timer_list[buff_list] = self.buff_timer_list[buff_list] + self.buff_timer_add_list[buff_list]
 
         if pygame.sprite.spritecollide(self.ship_sprite, self.buff1_list, True):
             self.buff1_timer += 360
@@ -438,36 +420,38 @@ class Game:
             self.buff5_effect = True
             self.buff5_timer = 0
         
+        self.bullet_with_alien1 = []
         for bullet_list in self.bullet_list_list:
-            try:
-                self.bullet_with_alien1 = pygame.sprite.groupcollide(bullet_list, self.alien1_list, self.buff2_effect, True)
-                self.bullet_with_alien2 = pygame.sprite.groupcollide(bullet_list, self.alien2_list, self.buff2_effect, True)
-                self.bullet_with_alien3 = pygame.sprite.groupcollide(bullet_list, self.alien3_list, self.buff2_effect, self.alien3_effect)
-                self.bullet_with_alien4 = pygame.sprite.groupcollide(bullet_list, self.alien4_list, self.buff2_effect, True)
-                self.bullet_with_alien5 = pygame.sprite.groupcollide(bullet_list, self.alien5_list, self.buff2_effect, True)
-            except:
-                pass
+            self.bullet_with_alien1.append(pygame.sprite.groupcollide(bullet_list, self.alien1_list, self.buff2_effect, True))
+        self.bullet_with_alien2 = []
+        for bullet_list in self.bullet_list_list:
+            self.bullet_with_alien2.append(pygame.sprite.groupcollide(bullet_list, self.alien2_list, self.buff2_effect, True))
+        self.bullet_with_alien3 = []
+        for bullet_list in self.bullet_list_list:
+            self.bullet_with_alien3.append(pygame.sprite.groupcollide(bullet_list, self.alien3_list, self.buff2_effect, self.alien3_effect))
+        self.bullet_with_alien4 = []
+        for bullet_list in self.bullet_list_list:
+            self.bullet_with_alien4.append(pygame.sprite.groupcollide(bullet_list, self.alien4_list, self.buff2_effect, True))
+        self.bullet_with_alien5 = []
+        for bullet_list in self.bullet_list_list:
+            self.bullet_with_alien5.append(pygame.sprite.groupcollide(bullet_list, self.alien5_list, self.buff2_effect, True))
 
-        self.bullet_with_alien_group1 = pygame.sprite.groupcollide(self.bullet1_list, self.alien_group1_list, self.buff2_effect, True)
+        self.bullet_with_alien_group1 = []
+        for bullet_list in self.bullet_list_list:
+            self.bullet_with_alien_group1.append(pygame.sprite.groupcollide(bullet_list, self.alien_group1_list, self.buff2_effect, True))
 
-        if len(self.bullet_with_alien1) != 0 or \
-            len(self.bullet_with_alien2) != 0 or \
-            len(self.bullet_with_alien3) != 0 or \
-            len(self.bullet_with_alien4) != 0 or \
-            len(self.bullet_with_alien5) != 0 or \
-            len(self.bullet_with_alien_group1) != 0:
+        self.bullet_with_alien_list = [self.bullet_with_alien1, self.bullet_with_alien2, self.bullet_with_alien3, self.bullet_with_alien4, self.bullet_with_alien5, self.bullet_with_alien_group1]
 
-            self.mark += \
-            len(self.bullet_with_alien1) + \
-            len(self.bullet_with_alien2) + \
-            len(self.bullet_with_alien3) + \
-            len(self.bullet_with_alien4) + \
-            len(self.bullet_with_alien5) + \
-            len(self.bullet_with_alien_group1)
-            random_hit_sound_effect = random.randint(1,4)
-            hit_sound_effect = pygame.mixer.Sound("assets/sound/effect/toggle_00"+str(random_hit_sound_effect)+".ogg")
-            hit_sound_effect.set_volume(0.1)
-            pygame.mixer.Channel(1).play(hit_sound_effect)
+        for bullet_with_alien in  self.bullet_with_alien_list:
+            for hit in bullet_with_alien:
+                if len(hit) != 0:
+                    self.mark += len(hit)
+                    random_hit_sound_effect = random.randint(1,4)
+                    hit_sound_effect = pygame.mixer.Sound("assets/sound/effect/toggle_00"+str(random_hit_sound_effect)+".ogg")
+                    hit_sound_effect.set_volume(0.1)
+                    pygame.mixer.Channel(1).play(hit_sound_effect)
+
+        bullet_with_bullet = pygame.sprite.groupcollide(self.bullet1_list, self.bulletA1_list, self.buff2_effect, True)
         
         if self.bullet_fire_switch == True:
             if self.bullet_type == '1':
@@ -489,13 +473,23 @@ class Game:
                     self.bullet2_list.add(bullet_sprite)
                     self.bullet2_timer = 5
 
+        for alien4 in self.alien4_list:
+            if self.bulletA1_timer > 0:
+                self.bulletA1_timer -= 1
+            if self.bulletA1_timer <= 0:
+                bullet_sprite = pygame.sprite.Sprite()
+                bullet_sprite.rect = pygame.Rect(0,0,self.bulletA1_width,16)
+                bullet_sprite.rect.midtop = alien4.rect.midbottom
+                self.bulletA1_list.add(bullet_sprite)
+                self.bulletA1_timer = 30
+
         if self.buff5_effect == True:
-            if pygame.sprite.spritecollideany(self.ship_sprite, self.alien1_list) or \
-               pygame.sprite.spritecollideany(self.ship_sprite, self.alien2_list) or \
-               pygame.sprite.spritecollideany(self.ship_sprite, self.alien3_list) or \
-               pygame.sprite.spritecollideany(self.ship_sprite, self.alien4_list) or \
-               pygame.sprite.spritecollideany(self.ship_sprite, self.alien5_list):
-                self.game_over()
+            game_over_list_list = [self.alien_list_list,self.bulletA_list_list]
+            for game_over_list in game_over_list_list:
+                for item in game_over_list:
+                    if pygame.sprite.spritecollideany(self.ship_sprite, item):
+                        self.game_over()
+
         
         self.spawn()
         self.save()
@@ -680,7 +674,7 @@ class Game:
 
     def game_over(self):
         self.empty_all_alien()
-        self.bullet1_list.empty()
+        self.empty_all_bullet()
         self.alien_spawn()
         self.ship_sprite.rect.midbottom = self.window_rect.midbottom
         time.sleep(0.5)
@@ -720,12 +714,17 @@ class Game:
             self.top_mark = 0
 
     def empty_all_alien(self):
-        self.alien1_list.empty()
-        self.alien2_list.empty()
-        self.alien3_list.empty()
-        self.alien4_list.empty()
-        self.alien5_list.empty()
-        self.alien_group1_list.empty()
+        all_alien_list = [self.alien1_list,self.alien2_list,self.alien3_list,self.alien4_list,self.alien5_list,self.alien_group1_list]
+        for alien_list in all_alien_list:
+            for alien_sprite in alien_list:
+                alien_sprite.kill()
+            # self.alien1_list.empty()
+    def empty_all_bullet(self):
+        all_bullet_list_list_list = [self.bullet_list_list,self.bulletA_list_list]
+        for bullet_list_list in all_bullet_list_list_list:
+            for bullet_list in bullet_list_list:
+                for bullet_sprite in bullet_list:
+                    bullet_sprite.kill()
 
 if __name__ == '__main__':
     game = Game()
