@@ -2,3 +2,9 @@
 pyinstaller -F -w -i assets/graphics/image/alien1.ico main.py
 
 assets\graphics\image\alien1.ico
+
+https://colorhunt.co/palette/a2d2fffef9efff865efee440
+rgb(162, 210, 255)
+rgb(254, 249, 239)
+rgb(255, 134, 94)
+rgb(254, 228, 64)

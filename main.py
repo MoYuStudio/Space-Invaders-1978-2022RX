@@ -24,6 +24,11 @@ class Game:
         # Config =========================================================================================================
 
         self.RUN = True
+        
+        # Setting =
+        self.WINDOW_SIZE = [(1920,1080),(1280,720),(800, 600)]
+        self.WINDOW_CODE = 2
+        self.FULL_SCREEN = True
 
         self.mark = 0
 
@@ -169,6 +174,17 @@ class Game:
         # Page =
         self.page = "MenuMain"
 
+        self.MenuSetting_text3 = self.font64.render("-", True, (254, 249, 239))
+        self.MenuSetting_text3_rect = self.MenuSetting_text3.get_rect()
+        self.MenuSetting_text5 = self.font64.render("+", True, (254, 249, 239))
+        self.MenuSetting_text5_rect = self.MenuSetting_text3.get_rect()
+        self.MenuSetting_text7 = self.font64.render("Yes", True, (254, 249, 239))
+        self.MenuSetting_text7_rect = self.MenuSetting_text7.get_rect()
+        self.MenuSetting_text9 = self.font64.render("Yes", True, (254, 249, 239))
+        self.MenuSetting_text9_rect = self.MenuSetting_text9.get_rect()
+
+
+
         pygame.mixer.set_num_channels(10)  # default is 8
 
     def set(self):
@@ -187,6 +203,17 @@ class Game:
 
         while self.RUN:
 
+            window_width, window_height = pygame.display.get_surface().get_size()
+            self.WINDOW_SIZE[2] = (window_width, window_height)
+
+            if self.FULL_SCREEN == True:
+                self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            if self.FULL_SCREEN == False:
+                self.window = pygame.display.set_mode(self.WINDOW_SIZE[self.WINDOW_CODE], pygame.RESIZABLE)
+            self.window_rect = self.window.get_rect()
+            self.window_width, self.window_height = self.window_rect.size
+            
+
             for self.event in pygame.event.get():
                 if self.event.type == pygame.QUIT:
                     self.RUN = False
@@ -198,6 +225,8 @@ class Game:
                 if self.event.type == pygame.MOUSEBUTTONDOWN:
                     if self.page == "MenuMain":
                         self.event_MenuMain_mousebuttondown()
+                    if self.page == "MenuSetting":
+                        self.event_MenuSetting_mousebuttondown()
                         
                 if self.event.type == pygame.KEYDOWN:
                     if self.event.key == pygame.K_ESCAPE:
@@ -211,9 +240,11 @@ class Game:
             self.window.fill((255,55,55,0))
             if self.page == "MenuMain":
                 self.page_MenuMain()
-            if self.page == "GameMain":
+            elif self.page == "MenuSetting":
+                self.page_MenuSetting()
+            elif self.page == "GameMain":
                 self.page_GameMain()
-            if self.page == "GameOver":
+            elif self.page == "GameOver":
                 self.page_GameOver()
 
             pygame.display.update()
@@ -228,7 +259,7 @@ class Game:
         self.window.fill((0, 0, 0))
 
         def text_render():
-            self.MenuMain_text1 = self.font64.render("SPACE INVADERS 1978", True, (random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+            self.MenuMain_text1 = self.font64.render("SPACE INVADERS 1978", True, (255, 134, 94))
             self.MenuMain_text1_rect = self.MenuMain_text1.get_rect()
             self.MenuMain_text1_rect.midtop = self.window_rect.midtop
             self.MenuMain_text1_rect.x = self.window_rect.width//36
@@ -242,7 +273,7 @@ class Game:
             self.MenuMain_text2_rect.y += self.MenuMain_text2_rect.height//4
             self.window.blit(self.MenuMain_text2, self.MenuMain_text2_rect)
 
-            self.MenuMain_text3_mousemotion_color = (255,255,255)
+            self.MenuMain_text3_mousemotion_color = (162, 210, 255)
             self.MenuMain_text3 = self.font64.render("Start", True, self.MenuMain_text3_mousemotion_color)
             self.MenuMain_text3_rect = self.MenuMain_text3.get_rect()
             self.MenuMain_text3_rect.midtop = self.MenuMain_text1_rect.midbottom
@@ -250,14 +281,14 @@ class Game:
             self.MenuMain_text3_rect.y += self.MenuMain_text2_rect.height+self.MenuMain_text3_rect.height
             self.window.blit(self.MenuMain_text3, self.MenuMain_text3_rect)
 
-            self.MenuMain_text4 = self.font64.render("Setting", True, (150,150,150))
+            self.MenuMain_text4 = self.font64.render("Setting", True, (162, 210, 255))
             self.MenuMain_text4_rect = self.MenuMain_text4.get_rect()
             self.MenuMain_text4_rect.midtop = self.MenuMain_text3_rect.midbottom
             self.MenuMain_text4_rect.x = self.window_rect.width//36
             self.MenuMain_text4_rect.y += self.MenuMain_text4_rect.height//2
             self.window.blit(self.MenuMain_text4, self.MenuMain_text4_rect)
 
-            self.MenuMain_text5 = self.font64.render("Quit", True, (255,255,255))
+            self.MenuMain_text5 = self.font64.render("Quit", True, (162, 210, 255))
             self.MenuMain_text5_rect = self.MenuMain_text4.get_rect()
             self.MenuMain_text5_rect.midtop = self.MenuMain_text4_rect.midbottom
             self.MenuMain_text5_rect.x = self.window_rect.width//36
@@ -270,6 +301,85 @@ class Game:
             self.MenuMain_text6_rect.x = self.window_rect.width-self.MenuMain_text6_rect.width
             self.window.blit(self.MenuMain_text6, self.MenuMain_text6_rect)
         text_render()
+
+    def page_MenuSetting(self):
+
+        self.window.fill((0, 0, 0))
+
+        self.MenuSetting_text1 = self.font64.render("Setting", True, (255, 134, 94))
+        self.MenuSetting_text1_rect = self.MenuSetting_text1.get_rect()
+        self.MenuSetting_text1_rect.midtop = self.window_rect.midtop
+        self.MenuSetting_text1_rect.x = self.window_rect.width//36
+        self.MenuSetting_text1_rect.y += self.MenuSetting_text1_rect.height//4
+        self.window.blit(self.MenuSetting_text1, self.MenuSetting_text1_rect)
+
+        self.MenuSetting_text2 = self.font64.render("Resolution", True, (254, 228, 64))
+        self.MenuSetting_text2_rect = self.MenuSetting_text2.get_rect()
+        self.MenuSetting_text2_rect.midtop = self.MenuSetting_text1_rect.midbottom
+        self.MenuSetting_text2_rect.x = self.window_rect.width//36
+        self.MenuSetting_text2_rect.y += self.MenuSetting_text2_rect.height//4
+        self.window.blit(self.MenuSetting_text2, self.MenuSetting_text2_rect)
+
+        self.MenuSetting_text3 = self.font64.render("-", True, (254, 249, 239))
+        self.MenuSetting_text3_rect = self.MenuSetting_text3.get_rect()
+        self.MenuSetting_text3_rect.midleft = self.MenuSetting_text2_rect.midright
+        self.MenuSetting_text3_rect.x = self.window_rect.width//2.5
+        self.window.blit(self.MenuSetting_text3, self.MenuSetting_text3_rect)
+
+        window_resolution = ''
+        if self.WINDOW_CODE == 2:
+            window_resolution = 'Free'
+        else:
+            window_resolution = str(self.WINDOW_SIZE[self.WINDOW_CODE][0])+'x'+str(self.WINDOW_SIZE[self.WINDOW_CODE][1])
+        self.MenuSetting_text4 = self.font64.render(window_resolution, True, (254, 249, 239))
+        self.MenuSetting_text4_rect = self.MenuSetting_text4.get_rect()
+        self.MenuSetting_text4_rect.midleft = self.MenuSetting_text3_rect.midright
+        # self.MenuSetting_text4_rect.x += self.MenuSetting_text2_rect.width//4
+        self.window.blit(self.MenuSetting_text4, self.MenuSetting_text4_rect)
+
+        self.MenuSetting_text5 = self.font64.render("+", True, (254, 249, 239))
+        self.MenuSetting_text5_rect = self.MenuSetting_text5.get_rect()
+        self.MenuSetting_text5_rect.midleft = self.MenuSetting_text4_rect.midright
+        # self.MenuSetting_text5_rect.x += self.MenuSetting_text2_rect.width//4
+        self.window.blit(self.MenuSetting_text5, self.MenuSetting_text5_rect)
+
+        self.MenuSetting_text6 = self.font64.render("Full Screen", True, (254, 228, 64))
+        self.MenuSetting_text6_rect = self.MenuSetting_text6.get_rect()
+        self.MenuSetting_text6_rect.midtop = self.MenuSetting_text2_rect.midbottom
+        self.MenuSetting_text6_rect.x = self.window_rect.width//36
+        self.MenuSetting_text6_rect.y += self.MenuSetting_text6_rect.height//4
+        self.window.blit(self.MenuSetting_text6, self.MenuSetting_text6_rect)
+
+        full_screen_NO_or_OFF = ''
+        if self.FULL_SCREEN == False:
+            full_screen_NO_or_OFF = 'OFF'
+        if self.FULL_SCREEN == True:
+            full_screen_NO_or_OFF = 'ON'
+        self.MenuSetting_text7 = self.font64.render(full_screen_NO_or_OFF, True, (254, 249, 239))
+        self.MenuSetting_text7_rect = self.MenuSetting_text7.get_rect()
+        self.MenuSetting_text7_rect.midleft = self.MenuSetting_text6_rect.midright
+        self.MenuSetting_text7_rect.x = self.window_rect.width//1.9
+        self.window.blit(self.MenuSetting_text7, self.MenuSetting_text7_rect)
+
+        self.MenuSetting_text8 = self.font64.render("Music", True, (254, 228, 64))
+        self.MenuSetting_text8_rect = self.MenuSetting_text8.get_rect()
+        self.MenuSetting_text8_rect.midtop = self.MenuSetting_text6_rect.midbottom
+        self.MenuSetting_text8_rect.x = self.window_rect.width//36
+        self.MenuSetting_text8_rect.y += self.MenuSetting_text8_rect.height//4
+        self.window.blit(self.MenuSetting_text8, self.MenuSetting_text8_rect)
+
+        self.MenuSetting_text9 = self.font64.render("Yes", True, (254, 249, 239))
+        self.MenuSetting_text9_rect = self.MenuSetting_text9.get_rect()
+        self.MenuSetting_text9_rect.midleft = self.MenuSetting_text8_rect.midright
+        self.MenuSetting_text9_rect.x = self.window_rect.width//1.9
+        self.window.blit(self.MenuSetting_text9, self.MenuSetting_text9_rect)
+
+        # self.MenuSetting_text7 = self.font64.render("Sound Effect", True, (254, 228, 64))
+        # self.MenuSetting_text7_rect = self.MenuSetting_text7.get_rect()
+        # self.MenuSetting_text7_rect.midtop = self.MenuSetting_text6_rect.midbottom
+        # self.MenuSetting_text7_rect.x = self.window_rect.width//36
+        # self.MenuSetting_text7_rect.y += self.MenuSetting_text7_rect.height//4
+        # self.window.blit(self.MenuSetting_text7, self.MenuSetting_text7_rect)
 
     def page_GameMain(self):
 
@@ -498,12 +608,13 @@ class Game:
 
         self.window.fill((0, 0, 0))
 
-        self.GameOver_text1 = self.font128.render("Game Over", True, (255,255,255))
+        self.GameOver_text1 = self.font128.render("Game Over", True, (255, 134, 94))
         self.GameOver_text1_rect = self.GameOver_text1.get_rect()
         self.GameOver_text1_rect.center = self.window_rect.center
+        self.GameOver_text1_rect.y -= self.GameOver_text1_rect.height//2
         self.window.blit(self.GameOver_text1, self.GameOver_text1_rect)
 
-        self.GameOver_text2 = self.font64.render("Your Mark is "+str(self.mark), True, (255,255,255))
+        self.GameOver_text2 = self.font64.render("Your Mark is "+str(self.mark), True, (254, 228, 64))
         self.GameOver_text2_rect = self.GameOver_text2.get_rect()
         self.GameOver_text2_rect.midtop = self.GameOver_text1_rect.midbottom
         self.window.blit(self.GameOver_text2, self.GameOver_text2_rect)
@@ -552,12 +663,43 @@ class Game:
             time.sleep(0.1)
             self.page = "GameMain"
             self.mark = 0
+        # setting
+        if pygame.Rect.collidepoint(self.MenuMain_text4_rect,self.event.pos):
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
+            time.sleep(0.1)
+            self.page = "MenuSetting"
             
         if pygame.Rect.collidepoint(self.MenuMain_text5_rect,self.event.pos):
             pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
             time.sleep(0.2)
             self.RUN = False
             sys.exit()
+
+    # MenuSetting =
+    def event_MenuSetting_mousebuttondown(self):
+        # Resolution
+        if pygame.Rect.collidepoint(self.MenuSetting_text3_rect,self.event.pos):
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
+            time.sleep(0.1)
+            if self.WINDOW_CODE >= 1:
+                self.WINDOW_CODE -= 1
+        if pygame.Rect.collidepoint(self.MenuSetting_text5_rect,self.event.pos):
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
+            time.sleep(0.1)
+            if self.WINDOW_CODE <= len(self.WINDOW_SIZE)-2:
+                self.WINDOW_CODE += 1
+        # FullScreen
+        if pygame.Rect.collidepoint(self.MenuSetting_text7_rect,self.event.pos):
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
+            time.sleep(0.1)
+            if self.FULL_SCREEN == True:
+                self.FULL_SCREEN = False
+            elif self.FULL_SCREEN == False:
+                self.FULL_SCREEN = True
+        # Music
+        if pygame.Rect.collidepoint(self.MenuSetting_text9_rect,self.event.pos):
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
+            time.sleep(0.1)
 
     # Function ===========================================================================================================
 
