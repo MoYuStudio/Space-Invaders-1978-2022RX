@@ -451,7 +451,7 @@ class Game:
                     hit_sound_effect.set_volume(0.1)
                     pygame.mixer.Channel(1).play(hit_sound_effect)
 
-        bullet_with_bullet = pygame.sprite.groupcollide(self.bullet1_list, self.bulletA1_list, self.buff2_effect, True)
+        bullet_with_bullet = pygame.sprite.groupcollide(self.bullet1_list, self.bulletA1_list, True, True)
         
         if self.bullet_fire_switch == True:
             if self.bullet_type == '1':
