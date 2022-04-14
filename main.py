@@ -30,7 +30,9 @@ class Game:
         self.WINDOW_CODE = 2
         self.FULL_SCREEN = True
 
-        self.mark = 0
+        self.MUSIC_SWITCH = True
+
+        self.score = 0
 
         # Save =
         self.save_path = "data/"
@@ -295,7 +297,7 @@ class Game:
             self.MenuMain_text5_rect.y += self.MenuMain_text5_rect.height//2
             self.window.blit(self.MenuMain_text5, self.MenuMain_text5_rect)
 
-            self.MenuMain_text6 = self.font32.render("Your Top Mark "+str(self.top_mark), True, (255,255,255))
+            self.MenuMain_text6 = self.font32.render("Your Top Score "+str(self.top_score), True, (255,255,255))
             self.MenuMain_text6_rect = self.MenuMain_text6.get_rect()
             self.MenuMain_text6_rect.midtop = self.window_rect.midtop
             self.MenuMain_text6_rect.x = self.window_rect.width-self.MenuMain_text6_rect.width
@@ -445,7 +447,7 @@ class Game:
             self.GameMain_text4_rect.y = self.GameMain_text4_rect.height//8
             self.window.blit(self.GameMain_text4, self.GameMain_text4_rect)
 
-            self.GameMain_text5 = self.font64.render("Mark :"+str(self.mark), True, (255,255,255))
+            self.GameMain_text5 = self.font64.render("Score :"+str(self.score), True, (255,255,255))
             self.GameMain_text5_rect = self.GameMain_text5.get_rect()
             self.GameMain_text5_rect.midleft = self.GameMain_text4_rect.midright
             self.GameMain_text5_rect.x += self.window_rect.width//8
@@ -555,7 +557,7 @@ class Game:
         for bullet_with_alien in  self.bullet_with_alien_list:
             for hit in bullet_with_alien:
                 if len(hit) != 0:
-                    self.mark += len(hit)
+                    self.score += len(hit)
                     random_hit_sound_effect = random.randint(1,4)
                     hit_sound_effect = pygame.mixer.Sound("assets/sound/effect/toggle_00"+str(random_hit_sound_effect)+".ogg")
                     hit_sound_effect.set_volume(0.1)
@@ -614,7 +616,7 @@ class Game:
         self.GameOver_text1_rect.y -= self.GameOver_text1_rect.height//2
         self.window.blit(self.GameOver_text1, self.GameOver_text1_rect)
 
-        self.GameOver_text2 = self.font64.render("Your Mark is "+str(self.mark), True, (254, 228, 64))
+        self.GameOver_text2 = self.font64.render("Your score is "+str(self.score), True, (254, 228, 64))
         self.GameOver_text2_rect = self.GameOver_text2.get_rect()
         self.GameOver_text2_rect.midtop = self.GameOver_text1_rect.midbottom
         self.window.blit(self.GameOver_text2, self.GameOver_text2_rect)
@@ -662,7 +664,7 @@ class Game:
             pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
             time.sleep(0.1)
             self.page = "GameMain"
-            self.mark = 0
+            self.score = 0
         # setting
         if pygame.Rect.collidepoint(self.MenuMain_text4_rect,self.event.pos):
             pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/sound/effect/switch_001.ogg"))
@@ -706,7 +708,7 @@ class Game:
     def spawn(self):
         self.buff_spawn()
         if not self.alien1_list and not self.alien2_list and not self.alien3_list and not self.alien4_list and not self.alien5_list:
-            for i in range((self.mark//1)+1):
+            for i in range((self.score//1)+1):
                 self.alien_spawn()
         if not self.alien_group1_list:
             if self.try_alien_group_spawn_timer > 0:
@@ -845,15 +847,15 @@ class Game:
         return self.save_read_data
     
     def save(self):
-        if self.mark >= self.top_mark:
-                self.save_write_data = {"top_mark":self.mark}
+        if self.score >= self.top_score:
+                self.save_write_data = {"top_score":self.score}
                 self.save_write()
     def load(self):
         self.save_read()
         if len(self.save_read_data) != 0:
-            self.top_mark = self.save_read_data['top_mark']
+            self.top_score = self.save_read_data['top_score']
         else:
-            self.top_mark = 0
+            self.top_score = 0
 
     def empty_all_alien(self):
         all_alien_list = [self.alien1_list,self.alien2_list,self.alien3_list,self.alien4_list,self.alien5_list,self.alien_group1_list]
