@@ -81,7 +81,7 @@ class Game:
         #self.alien_moving_speed = 12
         self.alien_direction = 1
 
-                # Bullet =
+        # Bullet =
         # 1普通弹 2极速弹 3范围弹 4穿透弹   A1普通弹(怪物)
         self.bullet_fire_switch = True
         self.bullet_type = '1'
@@ -96,7 +96,7 @@ class Game:
         self.bullet1_width = 8
         self.bullet1_timer = 0
         self.bullet1_color = (50,250,50)
-        self.bullet2_moving_speed = 3
+        self.bullet2_moving_speed = 9
         self.bullet2_width = 8
         self.bullet2_timer = 0
         self.bullet2_color = (150,50,250)
@@ -114,7 +114,7 @@ class Game:
         self.bullet5_color = (50,250,50)
 
         # Buff =
-        # 1范围Buff 2穿透Buff 3清屏Buff 4医疗Buff 5无敌Buff 6极速Buff
+        # 1范围Buff 2极速Buff 3清屏Buff 4医疗Buff 5无敌Buff 6穿透Buff
         self.buff1_list = pygame.sprite.Group()
         self.buff2_list = pygame.sprite.Group()
         self.buff3_list = pygame.sprite.Group()
@@ -388,15 +388,15 @@ class Game:
                     self.buff_list_list[buff_number].remove(buff)
 
         if pygame.sprite.spritecollide(self.ship_sprite, self.buff1_list, True):
-            self.buff1_timer += 240
+            self.buff1_timer += 360
         if pygame.sprite.spritecollide(self.ship_sprite, self.buff2_list, True):
-            self.buff2_timer += 240
+            self.buff2_timer += 360
         if pygame.sprite.spritecollide(self.ship_sprite, self.buff3_list, True):
             self.buff3_timer += 1
         if pygame.sprite.spritecollide(self.ship_sprite, self.buff4_list, True):
             self.buff4_timer += 1
         if pygame.sprite.spritecollide(self.ship_sprite, self.buff5_list, True):
-            self.buff5_timer += 360
+            self.buff5_timer += 512
         
         # buff1
         if self.buff1_timer > 0:
@@ -409,10 +409,12 @@ class Game:
         if self.buff2_timer > 0:
             self.bullet_type = '2'
             self.buff2_effect = False
+            self.ship_moving_speed = 12
             self.buff2_timer -= 1
         if self.buff2_timer <= 0:
             self.bullet_type = '1'
             self.buff2_effect = True
+            self.ship_moving_speed = 7
             self.buff2_timer = 0
         # buff3
         if self.buff3_timer > 0:
@@ -502,11 +504,10 @@ class Game:
 
         self.window.fill((0, 0, 0))
 
-        self.window.blit(self.GameOver_text1, self.GameOver_text1_rect)
-
         self.GameOver_text1 = self.font128.render("Game Over", True, (255,255,255))
         self.GameOver_text1_rect = self.GameOver_text1.get_rect()
         self.GameOver_text1_rect.center = self.window_rect.center
+        self.window.blit(self.GameOver_text1, self.GameOver_text1_rect)
 
         self.GameOver_text2 = self.font64.render("Your Mark is "+str(self.mark), True, (255,255,255))
         self.GameOver_text2_rect = self.GameOver_text2.get_rect()
@@ -638,38 +639,38 @@ class Game:
                 self.alien5_list.add(alien_sprite)
     
     def buff_spawn(self):
-        try_buff_spawn = random.randint(1,300)
+        try_buff_spawn = random.randint(1,500)
         if try_buff_spawn == 1:
             buff_spawn_type = random.randint(1,100)
-            if 1 <= buff_spawn_type <= 20:
+            if 1 <= buff_spawn_type <= 30:
                 buff_sprite = pygame.sprite.Sprite()
                 buff_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/buff1.png"),(32,32))
                 buff_sprite.rect = buff_sprite.image.get_rect()
                 buff_sprite.rect.x = random.randint(buff_sprite.rect.width,self.window_width-buff_sprite.rect.width*2)
                 buff_sprite.rect.y = -buff_sprite.rect.height
                 self.buff1_list.add(buff_sprite)
-            if 21 <= buff_spawn_type <= 40:
+            if 31 <= buff_spawn_type <= 70:
                 buff_sprite = pygame.sprite.Sprite()
                 buff_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/buff2.png"),(32,32))
                 buff_sprite.rect = buff_sprite.image.get_rect()
                 buff_sprite.rect.x = random.randint(buff_sprite.rect.width,self.window_width-buff_sprite.rect.width*2)
                 buff_sprite.rect.y = -buff_sprite.rect.height
                 self.buff2_list.add(buff_sprite)
-            if 41 <= buff_spawn_type <= 60:
+            if 71 <= buff_spawn_type <= 80:
                 buff_sprite = pygame.sprite.Sprite()
                 buff_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/buff3.png"),(32,32))
                 buff_sprite.rect = buff_sprite.image.get_rect()
                 buff_sprite.rect.x = random.randint(buff_sprite.rect.width,self.window_width-buff_sprite.rect.width*2)
                 buff_sprite.rect.y = -buff_sprite.rect.height
                 self.buff3_list.add(buff_sprite)
-            if 61 <= buff_spawn_type <= 80:
+            if 81 <= buff_spawn_type <= 90:
                 buff_sprite = pygame.sprite.Sprite()
                 buff_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/buff4.png"),(32,32))
                 buff_sprite.rect = buff_sprite.image.get_rect()
                 buff_sprite.rect.x = random.randint(buff_sprite.rect.width,self.window_width-buff_sprite.rect.width*2)
                 buff_sprite.rect.y = -buff_sprite.rect.height
                 self.buff4_list.add(buff_sprite)
-            if 81 <= buff_spawn_type <= 100:
+            if 91 <= buff_spawn_type <= 100:
                 buff_sprite = pygame.sprite.Sprite()
                 buff_sprite.image = pygame.transform.scale(pygame.image.load("assets/graphics/image/buff5.png"),(32,32))
                 buff_sprite.rect = buff_sprite.image.get_rect()
