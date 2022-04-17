@@ -8,3 +8,176 @@ rgb(162, 210, 255)
 rgb(254, 249, 239)
 rgb(255, 134, 94)
 rgb(254, 228, 64)
+
+
+SQL lite
+
+一、基本语法
+创建数据库 : create database basename
+删除数据库 : drop database dbname
+创建新表 : create table tablename(col1 type1 [not null] [primary key],col2 type2 [not null],..)
+
+创建相似表 :
+1：create table tab_new like tab_old (使用旧表创建新表)
+2：create table tab_new as select col1,col2… from tab_old definition only
+
+
+删除新表 : drop table tabname 
+增加一个列 : Alter table tabname add column type
+
+
+添加主键：Alter table tabname add primary key(col) 
+删除主键：Alter table tabname drop primary key(col) 
+创建索引：create [unique] index idxname on tabname(col….) 
+删除索引：drop index idxname
+注：索引是不可更改的，想更改必须删除重新建。
+创建视图：create view viewname as select statement 
+删除视图：drop view viewname
+
+
+二、简单sql语句
+简单SQL语句
+选择	select * from table1 where 条件
+插入	insert into table1(field1,field2) values(value1,value2)
+删除	delete from table1 where 条件
+更新	update table1 set field1=value1 where 条件
+查找	select * from table1 where field1 like ’%value1%’
+排序	select * from table1 order by field1,field2 [desc] 降序
+总数	select count as totalcount from table1
+求和	select sum(field1) as sumvalue from table1
+平均	select avg(field1) as avgvalue from table1
+最大	select max(field1) as maxvalue from table1
+最小	select min(field1) as minvalue from table1
+
+ 
+三、布尔运算
+合并： UNION
+
+UNION	合并会消除重复项。
+UNION ALL	不消除重复项
+                
+排除： EXCEPT
+            EXCEPT   包括所有在 TABLE1 中但不在 TABLE2 中的行并消除所有重复行而派生出一个结果表。
+
+            EXCEPT ALL   不消除重复行。
+
+
+交集：INTERSECT
+           INTERSECT    运算符通过只包括 TABLE1 和 TABLE2 中都有的行并消除所有重复行而派生出一个结果表。
+
+           INTERSECT ALL   不消除重复行。
+注：使用运算词的几个查询结果行必须是一致的。 
+
+
+四、连接 
+left （outer） join	
+结果集几包括连接表的匹配行，也包括左连接表的所有行。
+
+select a.a, a.b, a.c, b.c, b.d, b.f from a LEFT OUT JOIN b ON a.a = b.c
+
+right （outer） join	右外连接(右连接)：结果集既包括连接表的匹配连接行，也包括右连接表的所有行。 
+full/cross （outer） join	全外连接：不仅包括符号连接表的匹配行，还包括两个连接表中的所有记录。
+Group by	一张表，一旦分组 完成后，查询后只能得到组相关的信息
+ 
+
+ 
+
+五、常见应用
+法一：select * into b from a where 1<>1
+法二：select top 0 * into b from a	复制表(只复制结构,源表名：a 新表名：b)
+insert into b(a, b, c) select d,e,f from b;	拷贝表(拷贝数据,源表名：a 目标表名：b) (Access可用)
+insert into b(a, b, c) select d,e,f from b in ‘具体数据库’ where 条件	跨数据库之间表的拷贝(具体数据使用绝对路径) (Access可用)
+select a,b,c from a where a IN (select d from b ) 
+
+select a,b,c from a where a IN (1,2,3)
+
+子查询(表名1：a 表名2：b)
+select a.title,a.username,b.adddate from table a,(select max(adddate) adddate from table where table.title=a.title) b	显示文章、提交人和最后回复时间
+select a.a, a.b, a.c, b.c, b.d, b.f from a LEFT OUT JOIN b ON a.a = b.c	外连接查询(表名1：a 表名2：b)
+select * from (SELECT a,b,c FROM a) T where t.a > 1;	在线视图查询(表名1：a )
+ 
+select * from table1 where time between time1 and time2
+select a,b,c, from table1 where a not between 数值1 and 数值2	between的用法,between限制查询数据范围时包括了边界值,not between不包括
+select * from table1 where a [not] in (‘值1’,’值2’,’值4’,’值6’)	in 的使用方法
+delete from table1 where not exists ( select * from table2 where table1.field1=table2.field1 )	两张关联表，删除主表中已经在副表中没有的信息 
+select * from a left inner join b on a.a=b.b right inner join c on a.a=c.c inner join d on a.a=d.d where .....	四表联查问题：
+select * from 日程安排 where datediff('minute',f开始时间,getdate())>5	日程安排提前五分钟提醒 
+select top 10 b.* from (select top 20 主键字段,排序字段 from 表名 order by 排序字段 desc) a,表名 b where b.主键字段 = a.主键字段 order by a.排序字段	一条sql 语句搞定数据库分页
+select top 10 * form table1 where 范围	前10条记录
+select a,b,c from tablename ta where a=(select max(a) from tablename tb where tb.b=ta.b)	选择在每一组b值相同的数据中对应的a最大的记录的所有信息(类似这样的用法可以用于论坛每月排行榜,每月热销产品分析,按科目成绩排名,等等.)
+(select a from tableA ) except (select a from tableB) except (select a from tableC)	包括所有在 TableA中但不在 TableB和TableC中的行并消除所有重复行而派生出一个结果表
+ 
+select top 10 * from tablename order by newid()	随机取出10条数据
+select newid()	随机选择记录
+1) delete from tablename where id not in (select max(id) from tablename group by col1,col2,...)
+2) select distinct * into temp from tablename
+   delete from tablename
+   insert into tablename select * from temp	删除重复记录
+alter table tablename
+--添加一个自增列
+add  column_b int identity(1,1)
+ delete from tablename where column_b not in(
+select max(column_b)  from tablename group by column1,column2,...)
+alter table tablename drop column column_b	在一个外部表中导入数据，由于某些原因第一次只导入了一部分，但很难判断具体位置，这样只有在下一次全部导入，这样也就产生好多重复的字段，怎样删除重复字段
+select name from sysobjects where type='U' // U代表用户	列出数据库里所有的表名
+select name from syscolumns where id=object_id('TableName')	列出表里的所有的列名
+select type,sum(case vender when 'A' then pcs else 0 end),sum(case vender when 'C' then pcs else 0 end),sum(case vender when 'B' then pcs else 0 end) FROM tablename group by type	列示type、vender、pcs字段，以type字段排列，case可以方便地实现多重选择，类似select 中的case。
+TRUNCATE TABLE table1	初始化表table1
+select top 5 * from (select top 15 * from table order by id asc) table_别名 order by id desc	选择从10到15的记录
+ 
+六、Like匹配语法
+大多数对字符串的查找都是模糊的，或某个字段只有部分是相同的，这就要用到LIKE语句了，LIKE常用于SQL的模式匹配。
+
+语法格式：select * from 表名 where 字段名 like 对应值（子串）
+
+ 
+
+1. Like通配符：
+
+通配符
+
+说明
+
+_
+
+单个任意字符
+
+%
+
+一个或多个（字符或字符串）
+
+[]
+
+指定范围(例如[a-d]或特定集例如[abcdef])中的任意字符串
+
+^	‘非’，与指定字符以外的任意字符匹配
+[^]
+
+指定范围（例如，[^a-f]）或特定集（例如，[^abcdef]）之外的任意单字符匹配
+
+例子:
+
+假设有一个数据库中有个表Student，在Student中有两个字段，分别是id和name,id是int类型，name是varchar类型
+
+1.  查询id为100开头的学生信息
+
+Select * fromStudent where id like ‘100%’;
+
+2.  查询id为99结尾的学生信息
+
+Select * from Student where id like ‘%99’;
+
+3.查询id包含11在中间的学校信息
+
+Select* from Student where id like %11%;
+
+ 
+
+1• WHERE name LIKE '_qiu'                           可以找到以任意一个字符开始、并以 qiu结尾的名字（例如，aqiu、bqiu），第一个字符不能为空。 
+2• WHERE name LIKE '% qiu'                         可以找到姓以qiu结尾的所有员工。 
+3• WHERE name LIKE '% qiu'%'                     可以找到姓中任意位置包括qiu的所有员工。 
+4• WHERE name LIKE '[X]qiu'                         可以找到qiu、或以Xqiu，第一个字符可为空。
+5• WHERE name LIKE x[^x]%'                        可以找到以x开始的、后面的（第二个开始）字母不为 x 的所有项。
+————————————————
+版权声明：本文为CSDN博主「James.TCG」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_42253874/article/details/109291805

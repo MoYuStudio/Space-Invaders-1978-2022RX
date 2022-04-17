@@ -10,6 +10,7 @@ import sys
 import time
 import random
 import pickle
+import sqlite3
 import pygame
 
 class Game:
@@ -185,8 +186,6 @@ class Game:
         self.MenuSetting_text9 = self.font64.render("Yes", True, (254, 249, 239))
         self.MenuSetting_text9_rect = self.MenuSetting_text9.get_rect()
 
-
-
         pygame.mixer.set_num_channels(10)  # default is 8
 
     def set(self):
@@ -215,7 +214,6 @@ class Game:
             self.window_rect = self.window.get_rect()
             self.window_width, self.window_height = self.window_rect.size
             
-
             for self.event in pygame.event.get():
                 if self.event.type == pygame.QUIT:
                     self.RUN = False

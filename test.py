@@ -1,6 +1,17 @@
 
-a_list = [1, 2, 3, 4, 5]
-b_list = [6, 7, 8, 9, 10]
+import sqlite3
+ 
+data = sqlite3.connect('data.db')
+c = data.cursor()
 
-for i in a_list and b_list:
-    print(i)
+data_name = 'window_widen'
+
+cursor = c.execute('select * from main where name = "{}"'.format(str(data_name)))
+
+dataline = 2
+data_out = cursor.fetchone()
+print(data_out[dataline])
+print(type(data_out[dataline]))
+
+
+data.close()
