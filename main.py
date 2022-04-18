@@ -1,7 +1,8 @@
 
 import moyu_engine_ver_si as ME
-import moyu_engine_ver_si.config.config as C
+C = ME.config
 
 data = ME.Data
 data.load('window')
-print(C.config)
+# data.load('window')
+# print(C)
