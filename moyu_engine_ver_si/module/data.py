@@ -17,9 +17,9 @@ class Data:
     '''
     def __init__(self):
         # 数据库路径
-        self.database_path = 'moyu_engine_ver_si/config/'
+        self.database_path = 'database/'
         # 数据库列表
-        self.database_list = {'config': ['main','window']}
+        self.database_list = {'config': ['main','window','ship','alien','bullet','buff']}
         # 数据库格式
         self.database_format = {'config': ['config','data']}
         # 配置
@@ -57,12 +57,12 @@ class Data:
 
 if __name__ == '__main__':
     print(Data.__doc__)
-    data = Data()
-    data.load()
-    C = data.config['config']
-    C['main']['test'] = 1
-    data.update()
-    print(data.config)
+    # data = Data()
+    # data.load()
+    # C = data.config['config']
+    # C['main']['test'] = 1
+    # data.update()
+    # print(data.config)
 
 
 
